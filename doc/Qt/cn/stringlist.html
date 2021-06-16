@@ -1,0 +1,321 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title> CIOS / Qt：字串列表数据格式</title>
+    <link href="classic.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <div align="center">
+      <h1> CIOS / Qt：字串列表数据格式</h1>
+    </div>
+    <hr size="2" width="100%">
+    <h2>目录</h2>
+    <ul>
+      <li>数据表头<br>
+      </li>
+      <li>字串封包</li>
+      <li>长字串封包</li>
+      <li>循序存取格式<br>
+      </li>
+      <li>快速存取格式</li>
+    </ul>
+    简单地说，「字串列表数据格式」是一种「QStringList↔
+    QByteArray」的对应方法。分享数据被封装时，採用QByteArray::fromRawData，因此，原则上是一个
+    「QStringList↔ QByteArray」的对应处理方法。<br>
+    <br>
+    <hr size="2" width="100%">
+    <h3>数据表头</h3>
+    <br>
+    数据表头的大小为256位元组。<br>
+    <br>
+    <table width="100%" border="1" cellpadding="1" cellspacing="1">
+      <tbody>
+        <tr>
+          <td valign="top" align="center"><font color="#006600"><b>名称<br>
+              </b></font></td>
+          <td valign="top" align="center"><font color="#006600"><b>资料类型<br>
+              </b></font></td>
+          <td valign="top" align="center"><font color="#006600"><b>位元组<br>
+              </b></font></td>
+          <td valign="top" align="center"><font color="#006600"><b>说明<br>
+              </b></font></td>
+        </tr>
+        <tr>
+          <td valign="top">CIOS<br>
+          </td>
+          <td valign="top">char *<br>
+          </td>
+          <td valign="top" align="center">4<br>
+          </td>
+          <td valign="top">固定为CIOS，四个位元组。<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">Signature<br>
+          </td>
+          <td valign="top">quint32<br>
+          </td>
+          <td valign="top" align="center">4<br>
+          </td>
+          <td valign="top">字串列表数据格式封装区签名，数值为0x73219601。<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">Flags<br>
+          </td>
+          <td valign="top">quint64<br>
+          </td>
+          <td valign="top" align="center">8<br>
+          </td>
+          <td valign="top">目前使用状态。<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">Size<br>
+          </td>
+          <td valign="top">qint64<br>
+          </td>
+          <td valign="top" align="center">8<br>
+          </td>
+          <td valign="top">这个分享数据封包的资料区大小。</td>
+        </tr>
+        <tr>
+          <td valign="top">Occupied<br>
+          </td>
+          <td valign="top">qint64<br>
+          </td>
+          <td valign="top" align="center">8<br>
+          </td>
+          <td valign="top">已经佔用的资料区大小。</td>
+        </tr>
+        <tr>
+          <td valign="top">Items<br>
+          </td>
+          <td valign="top">qint32<br>
+          </td>
+          <td valign="top" align="center">4<br>
+          </td>
+          <td valign="top">字串数量。<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">Format<br>
+          </td>
+          <td valign="top">qint32<br>
+          </td>
+          <td valign="top" align="center">4<br>
+          </td>
+          <td valign="top">封包安排格式。</td>
+        </tr>
+        <tr>
+          <td valign="top">Gaps<br>
+          </td>
+          <td valign="top">qint32<br>
+          </td>
+          <td valign="top" align="center">4<br>
+          </td>
+          <td valign="top">快速存取格式的封包大小，内定为256位元组。</td>
+        </tr>
+        <tr>
+          <td valign="top">Reading<br>
+          </td>
+          <td valign="top">qint32<br>
+          </td>
+          <td valign="top" align="center">4<br>
+          </td>
+          <td valign="top">读取锁，现有的读取线绪数。<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">Wait<br>
+          </td>
+          <td valign="top">qint32<br>
+          </td>
+          <td valign="top" align="center">4<br>
+          </td>
+          <td valign="top">锁着时期的等待时间，内定为-1，即为永远等待，大于或等于0即为等待微秒。</td>
+        </tr>
+        <tr>
+          <td valign="top">Interval<br>
+          </td>
+          <td valign="top">qint32<br>
+          </td>
+          <td valign="top" align="center">4<br>
+          </td>
+          <td valign="top">等待时间的间隔，内定为1，即为等待1微秒。</td>
+        </tr>
+        <tr>
+          <td valign="top">CRC16<br>
+          </td>
+          <td valign="top">quint16<br>
+          </td>
+          <td valign="top" align="center">2<br>
+          </td>
+          <td valign="top">qChecksum的值，计算时期CRC16设定为0。<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">User<br>
+          </td>
+          <td valign="top">char *<br>
+          </td>
+          <td valign="top" align="center">198<br>
+          </td>
+          <td valign="top">用户使用区。</td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    Flags的格式：<br>
+    <br>
+    <table width="100%" border="1" cellpadding="1" cellspacing="1">
+      <tbody>
+        <tr>
+          <td valign="top" align="center"><font color="#006600"><b>Bit</b><b><br>
+              </b></font></td>
+          <td valign="top" align="center"><font color="#006600"><b>1</b><b><br>
+              </b></font></td>
+          <td valign="top" align="center"><font color="#006600"><b>0</b><b><br>
+              </b></font></td>
+          <td valign="top" align="center"><font color="#006600"><b>说明</b><b><br>
+              </b></font></td>
+        </tr>
+        <tr>
+          <td valign="top" align="right">0<br>
+          </td>
+          <td valign="top">写入被锁住，这表示数据正在被写入中。</td>
+          <td valign="top">可以自由读取。</td>
+          <td valign="top">写入锁。<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top" align="right">1<br>
+          </td>
+          <td valign="top">数据溢出，这表示QStringList无法塞进数据区。</td>
+          <td valign="top">数据区足够使用。</td>
+          <td valign="top">溢出状态。</td>
+        </tr>
+        <tr>
+          <td valign="top" align="right">2<br>
+          </td>
+          <td valign="top">等待时期呼叫qApp-&gt;processEvents()。<br>
+          </td>
+          <td valign="top">单纯msleep<br>
+          </td>
+          <td valign="top">等待状态的处理方式。</td>
+        </tr>
+        <tr>
+          <td valign="top" align="right"><br>
+          </td>
+          <td valign="top"><br>
+          </td>
+          <td valign="top"><br>
+          </td>
+          <td valign="top"><br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    Format的格式：<br>
+    <ul>
+      <li>Bit 30 : 1→长字串封包，0→字串封包。</li>
+      <li>Bit 31 : 1→快速存取格式，0→循序存取格式。</li>
+    </ul>
+    <br>
+    数据表头结束后，紧接着即为「字串封包」。<br>
+    <br>
+    <hr size="2" width="100%">
+    <h3>字串封包</h3>
+    每个字串数据封包的内容如下：<br>
+    <table width="100%" border="1" cellpadding="1" cellspacing="1">
+      <tbody>
+        <tr>
+          <td valign="top" align="center"><font color="#006600"><b>名称</b><b><br>
+              </b></font></td>
+          <td valign="top" align="center"><font color="#006600"><b>资料类型</b><b><br>
+              </b></font></td>
+          <td valign="top" align="center"><font color="#006600"><b>位元组</b><b><br>
+              </b></font></td>
+          <td valign="top" align="center"><font color="#006600"><b>说明</b><b><br>
+              </b></font></td>
+        </tr>
+        <tr>
+          <td valign="top">Length<br>
+          </td>
+          <td valign="top">qint32<br>
+          </td>
+          <td valign="top" align="center">4<br>
+          </td>
+          <td valign="top">字串长度，即Data的数据量。</td>
+        </tr>
+        <tr>
+          <td valign="top">Data<br>
+          </td>
+          <td valign="top">char *<br>
+          </td>
+          <td valign="top" align="center">变动<br>
+          </td>
+          <td valign="top">UTF8字串格式。<br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <hr size="2" width="100%">
+    <h3>长字串封包</h3>
+    每个长字串数据封包的内容如下：<br>
+    <table width="100%" border="1" cellpadding="1" cellspacing="1">
+      <tbody>
+        <tr>
+          <td valign="top" align="center"><font color="#006600"><b>名称</b><b><br>
+              </b></font></td>
+          <td valign="top" align="center"><font color="#006600"><b>资料类型</b><b><br>
+              </b></font></td>
+          <td valign="top" align="center"><font color="#006600"><b>位元组</b><b><br>
+              </b></font></td>
+          <td valign="top" align="center"><font color="#006600"><b>说明</b><b><br>
+              </b></font></td>
+        </tr>
+        <tr>
+          <td valign="top">Length<br>
+          </td>
+          <td valign="top">qint64<br>
+          </td>
+          <td valign="top" align="center">8<br>
+          </td>
+          <td valign="top">字串长度，即Data的数据量。</td>
+        </tr>
+        <tr>
+          <td valign="top">Data<br>
+          </td>
+          <td valign="top">char *<br>
+          </td>
+          <td valign="top" align="center">变动<br>
+          </td>
+          <td valign="top">UTF8字串格式。<br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <hr size="2" width="100%">
+    <h3>循序存取格式</h3>
+    循序存取格式採用紧凑的排列格式，每个数据封包结束后，立刻接着第二个字串数据封包。<br>
+    <br>
+    <hr size="2" width="100%">
+    <h3>快速存取格式</h3>
+    快速存取格式採用固定大小排列格式，每个数据封包结束后，下一个数据封包的位置是固定的，间隔为Gaps位元组。<br>
+    <br>
+    <hr size="2" width="100%"><br>
+    <br>
+    <br>
+    <br>
+    <hr size="2" width="100%">
+    <div align="center"><font color="#cc9933"><i><b>Neutrino
+            International Inc. 2001~2015</b></i></font><br>
+    </div>
+    <br>
+  </body>
+</html>

@@ -1,0 +1,5 @@
+SYNCQT.HEADER_FILES = ../../include/QtFinance/qtfinance.h
+SYNCQT.HEADER_CLASSES = ../../include/QtFinance/QtFinance
+SYNCQT.PRIVATE_HEADER_FILES =
+SYNCQT.QPA_HEADER_FILES = 
+SYNCQT.INJECTIONS = 

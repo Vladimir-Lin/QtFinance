@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QtHelpProject version="1.0">
+    <namespace>com.neutrino.finance</namespace>
+    <virtualFolder>Finance</virtualFolder>
+    <customFilter name="CIOS / Qt Finance 1.6.0">
+        <filterAttribute>CIOS / Qt Finance</filterAttribute>
+        <filterAttribute>1.6.0</filterAttribute>
+    </customFilter>
+    <filterSection>
+        <filterAttribute>CIOS / Qt Finance</filterAttribute>
+        <filterAttribute>1.6.0</filterAttribute>
+        <toc>
+            <section title="CIOS / Qt Finance Manual" ref="index.html">
+                <section title="English" ref="en/index.html"/>
+                <section title="Traditional Chinese" ref="tw/index.html"/>
+                <section title="Simplified Chinese" ref="cn/index.html"/>
+            </section>
+        </toc>
+        <keywords>
+            <keyword name="Finance" id="CIOS::Finance" ref="en/index.html"/>
+            <keyword name="StringList" id="CIOS::StringList" ref="en/stringlist.html"/>
+            <keyword name="財經" id="CIOS::財經" ref="tw/index.html"/>
+            <keyword name="字串列表數據格式" id="CIOS::字串列表數據格式" ref="tw/stringlist.html"/>
+        </keywords>
+        <files>
+            <file>*.css</file>
+            <file>*.html</file>
+            <file>images/*</file>
+            <file>tw/*</file>
+            <file>en/*</file>
+            <file>cn/*</file>
+        </files>
+    </filterSection>
+</QtHelpProject>
